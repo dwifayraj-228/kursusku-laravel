@@ -37,3 +37,6 @@ Route::get('/courses/{course}/availability', function (int $course) use ($course
     $remaining = max(0, $data['quota'] - $data['registered']);
     return response()->json(['course' => $data['name'], 'remaining' => $remaining]);
 })->name('courses.availability');
+
+// Route untuk menampilkan halaman daftar kursus
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');

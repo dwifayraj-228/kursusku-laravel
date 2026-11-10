@@ -1,0 +1,20 @@
+# AI LOG - Pertemuan 11 (Laravel)
+
+| Pertanyaan / Prompt | Usulan AI | Digunakan? | Keterangan |
+| :--- | :--- | :--- | :--- |
+| Bagaimana menampilkan halaman detail (Show)? | Manfaatkan route model binding dengan parameter `Course $course`, lalu teruskan variabel tersebut ke view `courses.show`. | Ya | Tidak perlu menulis query pencarian manual karena Laravel sudah mencarikan model berdasarkan ID di URL. |
+| Bagaimana caranya agar validasi tidak menumpuk di Controller? | Jalankan `php artisan make:request StoreCourseRequest` dan `UpdateCourseRequest`. | Ya | Controller jadi lebih ringkas karena urusan pemeriksaan input dipindah ke kelas tersendiri. |
+| Error unique muncul ketika menyimpan hasil edit, bagaimana solusinya? | Tambahkan `Rule::unique('courses', 'code')->ignore($course)` pada aturan validasi. | Ya | Dengan begitu, pengecekan unique tidak membandingkan record dengan dirinya sendiri. |
+| Bagaimana membuat tombol hapus yang aman? | Gunakan form dengan method POST, sertakan `@csrf` dan `@method('DELETE')`, lalu tambahkan konfirmasi JavaScript sebelum submit. | Ya | Mengikuti konvensi Laravel sekaligus mengurangi risiko data terhapus tanpa sengaja. |
+
+## Catatan Akhir
+
+1. **Struktur kode jadi lebih rapi.** Setelah aturan validasi dipindahkan ke `StoreCourseRequest` dan `UpdateCourseRequest`, isi `CourseController` terasa lebih fokus. Controller tinggal mengurus alur data, sedangkan validasi ditangani file terpisah yang tugasnya memang memeriksa input.
+
+2. **Bagian paling menantang: unique saat update.** Awalnya sempat bingung karena data tidak bisa disimpan padahal kode tidak diubah. Setelah memakai `Rule::unique()->ignore($course)`, masalah itu selesai dan proses edit berjalan normal.
+
+3. **Posisi AI dalam praktikum ini.** AI saya gunakan sebagai teman diskusi dan pembantu menelusuri error, bukan sebagai pembuat kode utama. Pengetikan, percobaan di browser, serta pengecekan manual (termasuk uji kuota, kode ganda, dan method DELETE) tetap saya lakukan sendiri agar hasilnya benar-benar dipahami.
+
+4. **Validasi server tidak bisa diakali.** Saat mencoba memasukkan kuota 501 atau kode yang sudah terdaftar, sistem tetap menolak. Ini membuktikan bahwa memanipulasi form di sisi browser tidak cukup untuk melewati aturan yang sudah dipasang di Laravel.
+
+---
