@@ -1,42 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EnrollmentController;
 
-
+// Route untuk Halaman Beranda
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::resource('courses', CourseController::class);
 
-$coursesData = [
-    1 => ['name' => 'Web Dasar', 'quota' => 30, 'registered' => 12],
-    2 => ['name' => 'PHP Dasar', 'quota' => 30, 'registered' => 18],
-    3 => ['name' => 'PHP Lanjutan', 'quota' => 25, 'registered' => 24],
-    4 => ['name' => 'Laravel Fundamental', 'quota' => 25, 'registered' => 25],
-    5 => ['name' => 'MySQL Dasar', 'quota' => 20, 'registered' => 0],
-    6 => ['name' => 'UI Web Dasar', 'quota' => 35, 'registered' => 9],
-];
-
-Route::get('/pendaftaran', function () use ($coursesData) {
-    return view('enrollments.create', ['courses' => $coursesData]);
-})->name('enrollments.create');
-
-Route::post('/pendaftaran/preview', function (Request $request) {
-    $request->validate([
-        'name' => ['required', 'string', 'min:3', 'max:100'],
-        'email' => ['required', 'email'],
-        'course_id' => ['required', 'integer'],
-    ]);
-    return back()->with('success', 'Form lolos validasi.')->withInput();
-})->name('enrollments.preview');
-
-Route::get('/courses/{course}/availability', function (int $course) use ($coursesData) {
-    abort_unless(isset($coursesData[$course]), 404);
-    $data = $coursesData[$course];
-    $remaining = max(0, $data['quota'] - $data['registered']);
-    return response()->json(['course' => $data['name'], 'remaining' => $remaining]);
+// Route JSON untuk Cek Sisa Kursi (Ajax Week 9)
+Route::get('/courses/{course}/availability', function (int $course) {
+    $availability = [
+        1 => ['course' => 'Web Dasar', 'remaining' => 12],
+        2 => ['course' => 'PHP Dasar', 'remaining' => 8],
+        3 => ['course' => 'Laravel Dasar', 'remaining' => 4],
+    ];
+    abort_unless(isset($availability[$course]), 404);
+    return response()->json($availability[$course]);
 })->name('courses.availability');
 
-// Route untuk menampilkan halaman daftar kursus
-Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+// Route Resource untuk CRUD Course (Week 10 & 11)
+Route::resource('courses', CourseController::class);
+
+// Route Resource untuk Enrollment (Week 12)
+// Ini otomatis membuat route enrollments.index, enrollments.create, dan enrollments.store
+Route::resource('enrollments', EnrollmentController::class)
+    ->only(['index', 'create', 'store']);
