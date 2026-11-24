@@ -9,21 +9,41 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $courses = Course::latest()->get();
-        return view('courses.index', compact('courses'));
+        $search = trim((string) $request->query('q'));
+        $status = trim((string) $request->query('status'));
+
+        $allowedStatuses = ['open', 'closed', 'draft'];
+
+        $courses = Course::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('code', 'like', "%{$search}%")
+                      ->orWhere('name', 'like', "%{$search}%");
+                });
+            })
+            ->when(in_array($status, $allowedStatuses, true), function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('courses.index', compact('courses', 'search', 'status'));
     }
 
     public function create()
     {
         return view('courses.create');
     }
-    
+
     public function store(StoreCourseRequest $request)
     {
         Course::create($request->validated());
-        return to_route('courses.index')->with('success', 'Kursus berhasil ditambahkan.');
+
+        return redirect()->route('courses.index')
+            ->with('success', 'Kursus berhasil ditambahkan.');
     }
 
     public function show(Course $course)
@@ -39,12 +59,16 @@ class CourseController extends Controller
     public function update(UpdateCourseRequest $request, Course $course)
     {
         $course->update($request->validated());
-        return to_route('courses.show', $course)->with('success', 'Kursus berhasil diperbarui.');
+
+        return redirect()->route('courses.index')
+            ->with('success', 'Kursus berhasil diperbarui.');
     }
 
     public function destroy(Course $course)
     {
         $course->delete();
-        return to_route('courses.index')->with('success', 'Kursus berhasil dihapus.');
+
+        return redirect()->route('courses.index')
+            ->with('success', 'Kursus berhasil dihapus.');
     }
 }
