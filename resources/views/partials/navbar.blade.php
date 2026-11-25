@@ -1,3 +1,4 @@
+
 <header style="background-color: #1c45c9; color: white; text-align: center; padding: 25px 0;">
     <div class="container">
         <h1 style="margin: 0; font-size: 32px; font-weight: bold;">KursusKu</h1>
@@ -5,17 +6,35 @@
     </div>
 </header>
 
-<nav style="background-color: #405186; display: flex; justify-content: center; padding: 15px 0; gap: 30px;">
+<nav style="background-color: #405186; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; padding: 15px 0; gap: 30px;">
+
     <a href="{{ route('home') }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Beranda</a>
+
     <a href="#keunggulan" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Keunggulan</a>
+
     <a href="#kursus" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Katalog</a>
+
     <a href="#alur" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Cara Daftar</a>
+
     <a href="#media" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Media</a>
+
     <a href="#kontak" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Kontak</a>
-    
-    <!-- MENU DAFTAR KURSUS (Sekarang di depan) -->
+
     <a href="{{ route('enrollments.create') }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Daftar Kursus</a>
-    
-<!-- LINK BARU: Dipindah ke paling kanan -->
-  <a href="{{ route('courses.index') }}" class="nav-link" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">KursusKu</a>
-    </nav>
+
+    <a href="{{ route('courses.index') }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">KursusKu</a>
+
+    @auth
+        <a href="{{ route('profile') }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Profil Saya</a>
+
+        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            @csrf
+            
+        </form>
+    @endauth
+
+    @guest
+        <a href="{{ route('login') }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">Login</a>
+    @endguest
+
+</nav>

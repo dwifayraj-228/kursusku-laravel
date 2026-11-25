@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 
 // Route untuk Halaman Beranda
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -26,3 +28,25 @@ Route::resource('courses', CourseController::class);
 // Ini otomatis membuat route enrollments.index, enrollments.create, dan enrollments.store
 Route::resource('enrollments', EnrollmentController::class)
     ->only(['index', 'create', 'store']);
+    // Route Login
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])
+        ->name('login');
+
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login.process');
+});
+
+// Route Logout
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+    
+// Route Profil Pengguna
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])
+        ->name('profile');
+
+    Route::put('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+});
